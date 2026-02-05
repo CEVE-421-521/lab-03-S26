@@ -3,6 +3,7 @@ title: "Lab 3: Sea-Level Rise Scenarios and Uncertainty"
 subtitle: "CEVE 421/521"
 date: 2026-01-30
 engine: julia
+status: published
 
 format:
   html:
@@ -105,10 +106,21 @@ All sea-level rise projections in this lab are for Sewells Point, measured in me
 
 ```{julia}
 #| output: false
-dir_name = dirname(@__FILE__)
 using Pkg
-Pkg.activate(dir_name)
-if !isfile(joinpath(dir_name, "Manifest.toml"))
+try
+    # Activate the local project
+    Pkg.activate(@__DIR__)
+
+    # Check if Manifest exists, if not instantiate
+    if !isfile(joinpath(@__DIR__, "Manifest.toml"))
+        Pkg.instantiate()
+    else
+        # Try to resolve any inconsistencies
+        Pkg.resolve()
+    end
+catch e
+    @warn "Package environment setup failed, attempting recovery" exception=e
+    Pkg.activate(@__DIR__)
     Pkg.instantiate()
 end
 ```
